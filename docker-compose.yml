@@ -3,7 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
-    container_name: login_web
+    container_name: *****
     volumes:
       - ./src:/var/www/html
     ports:
@@ -12,16 +12,16 @@ services:
     image: mysql:8.0
     container_name: login_db
     environment:
-      MYSQL_ROOT_PASSWORD: admin123 # ¡Importante!
+      MYSQL_ROOT_PASSWORD: *****
       MYSQL_DATABASE: ProyectoFinalCS
     volumes:
       - db_data:/var/lib/mysql
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: login_pma
+    container_name: ****
     environment:
       PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_ROOT_PASSWORD: *****
     ports:
       - "8081:80"
 
