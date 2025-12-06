@@ -3,7 +3,7 @@
 $host = 'db'; // Nombre del servicio del contenedor MySQL
 $db   = 'ProyectoFinalCS';
 $user = 'root'; // Usuario root dentro del contenedor
-$pass = 'admin123'; // La contraseña que definiste
+$pass = ''; // La contraseña que definiste
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
