@@ -1,0 +1,16 @@
+{
+    "name": "vevo/proyecto-final_cs",
+    "require": {
+        "phpmailer/phpmailer": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Vevo\\ProyectoFinalCs\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alexis"
+        }
+    ]
+}

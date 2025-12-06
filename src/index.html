@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WUSHI HOME</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Definiciones de color para la estética japonesa moderna */
+        :root {
+            --color-background-soft: #FAFAFA; /* Blanco roto / Gris muy claro */
+            --color-base-dark: #333333;       /* Gris carbón suave */
+            --color-sidebar: #EFEFEF;         /* Contraste suave para la sidebar */
+            --color-accent: #F15A24;          /* Color Naranja/Rojo Ladrillo: #F15A24 */
+            --color-text-light: #777777;
+            --color-washi-paper: rgba(255, 255, 255, 0.85); /* Fondo semitransparente para el slide */
+        }
+
+        /* CORRECCIÓN: Estándar para iconos de Lucide (SVG) */
+        [data-lucide] {
+            color: var(--color-base-dark);
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0; /* Evita que el icono se encoja */
+        }
+        
+        * {
+            font-family: "Lexend Deca", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: auto;
+            font-style: normal;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* FONDO DE IMAGEN APLICADO AL BODY */
+        body {
+            overflow-x: hidden;
+            background-image: url('https://i.pinimg.com/736x/64/0e/e7/640ee7d8a8e3c04a7af8ef4bcbdc7d02.jpg'); 
+            background-color: var(--color-background-soft); 
+            background-size: cover; 
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed; 
+            color: var(--color-base-dark);
+        }
+        
+        /* Contenedor principal para las diapositivas, permite el desplazamiento vertical */
+        .slides {
+            margin-left: 200px; 
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        /* SLIDE: Fondo de papel Washi y separador inferior */
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 3rem;
+            /* scroll-snap-align: start; <- CORRECCIÓN: Se elimina si no se usa scroll-snap-type en el contenedor padre */
+            background-color: var(--color-washi-paper); /* Fondo de "papel" para la legibilidad */
+            position: relative;
+            /* Separador de estilo japonés (sutil línea en la parte inferior de cada slide) */
+            border-bottom: 2px solid rgba(0, 0, 0, 0.05); 
+        }
+
+        .slide::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 2px;
+            background-color: var(--color-accent);
+            opacity: 0.1; /* Muy sutil */
+        }
+        .slides > section:last-child::after {
+            display: none; /* Quitar el separador de la última sección */
+        }
+
+        /* Navegación lateral fija (Estilo Shoji Screen) */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 100vh;
+            background-color: var(--color-sidebar); 
+            border-right: 1px solid #EEEEEE; 
+            padding: 2rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        /* Contenedor de lista para permitir flex-grow */
+        nav ul {
+            display: flex;
+            flex-direction: column;
+            width: 100%; /* Asegura que el ul ocupe todo el ancho de la nav */
+        }
+
+        /* Estilo base del enlace de la barra lateral */
+        nav ul li a {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            color: var(--color-base-dark);
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+            border-left: 4px solid transparent; /* Línea para indicar activo/hover */
+        }
+        
+        /* Estilo base de los iconos en la navegación - CORRECCIÓN: Estándar para Lucide */
+        nav ul li a [data-lucide] {
+             color: var(--color-base-dark); 
+             margin-right: 0.5rem; /* Ajuste para el espaciado correcto */
+        }
+
+        /* Mejoras en el link activo de la barra lateral */
+        nav ul li.active-nav-link a {
+            /* Cambios de color para el estado activo */
+            background-color: rgba(241, 90, 36, 0.1); /* Color accent con opacidad */
+            color: var(--color-base-dark);
+            border-left-color: var(--color-accent);
+            font-weight: 700; /* Negrita al estar activo */
+        }
+        /* CORRECCIÓN: Hover de la barra lateral. Separado para mantener el activo fuerte. */
+        nav ul li a:hover:not(.logout-li a) {
+            background-color: rgba(241, 90, 36, 0.05); 
+            border-left-color: var(--color-accent);
+        }
+
+        /* CORRECCIÓN: Añadir estilo para el icono en el estado activo/hover */
+        nav ul li.active-nav-link a [data-lucide],
+        nav ul li a:hover:not(.logout-li a) [data-lucide] {
+            color: var(--color-accent);
+        }
+        
+        /* CORRECCIÓN: Estilo específico para el texto en móvil (el 'em' de texto) */
+        @media (min-width: 769px) {
+            nav ul li a em {
+                margin-left: 0.5rem; /* Asegurar el espacio entre icono y texto en desktop */
+            }
+        }
+
+        /* Estilos del logo y preloader (se mantienen) */
+        .logo {
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--color-base-dark);
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #EEEEEE; /* Separador bajo el logo */
+            width: 80%;
+            display: flex; 
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .logo-img {
+            width: 90px; /* Tamaño del logo */
+            height: 90px;
+            object-fit: contain; /* Asegura que el logo se vea completo */
+            border-radius: 50%; /* Opcional: para hacerlo redondo */
+            border: 3px solid var(--color-accent); /* Borde para resaltarlo */
+            box-shadow: 0 0 10px rgba(241, 90, 36, 0.4);
+            padding: 5px; /* Pequeño padding dentro del borde */
+        }
+        
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+
+        #spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3); 
+            border-top: 4px solid var(--color-accent); 
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 🍣 Estilos del Modal Personalizado 🍣 (Se mantienen) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); 
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            z-index: 999; 
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .modal-content {
+            background-color: var(--color-washi-paper); 
+            border: 2px solid var(--color-accent);
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-50px);
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+        
+        /* Responsividad: Ajustar la navegación lateral para móvil */
+        @media (max-width: 768px) {
+            nav {
+                width: 100%;
+                height: auto;
+                position: relative; /* CORRECCIÓN: Hacer que la nav no sea fija en móvil */
+                padding: 0.5rem 0; /* Menos padding */
+                border-right: none;
+                border-bottom: 1px solid #EEEEEE;
+            }
+            nav ul {
+                flex-direction: row;
+                flex-wrap: nowrap; 
+                justify-content: space-around;
+                width: 100%;
+            }
+            nav ul li {
+                flex-shrink: 0;
+                /* CORRECCIÓN: Eliminar la sección de logout del flujo de mobile */
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+                border-top: none !important;
+            }
+            .slides {
+                margin-left: 0;
+            }
+            .slide {
+                padding: 4rem 1rem;
+            }
+            .logo {
+                display: none;
+            }
+            .logout-li {
+                display: none; /* Ocultar el botón de logout en la navegación principal del móvil */
+            }
+            nav ul li a {
+                padding: 0.75rem 0.5rem; /* Ajustar padding para más espacio */
+                justify-content: center; /* Centrar el icono */
+                border-left: none; /* Quitar la línea izquierda */
+                border-bottom: 4px solid transparent; /* Usar línea inferior */
+            }
+            /* Estilo activo/hover en móvil */
+            nav ul li a:hover, nav ul li.active-nav-link a {
+                background-color: transparent; /* CORRECCIÓN: Hacer que el hover sea más sutil en móvil */
+                border-left-color: transparent;
+                border-bottom-color: var(--color-accent);
+            }
+            nav ul li a [data-lucide] {
+                margin-right: 0; /* CORRECCIÓN: Quitar margen del icono en móvil */
+            }
+            nav ul li a em {
+                display: none; /* Ocultar el texto del menú, solo iconos en móvil */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="preloader">
+        <div id="spinner"></div>
+    </div>
+
+    <nav id="main-nav">
+        <div class="logo">
+            <img src="https://cdn-icons-png.flaticon.com/512/3259/3259078.png" alt="Wushi Logo Sushi" class="logo-img" aria-label="Wushi Home Logo">
+        </div>
+        <ul class="flex-grow w-full" role="navigation" aria-label="Navegación principal"> 
+            <li><a href="#1" class="scroll-link" data-id="1" aria-current="page"><i data-lucide="home"></i> <em>Inicio</em></a></li>
+            <li><a href="#2" class="scroll-link" data-id="2"><i data-lucide="users"></i> <em>Nosotros</em></a></li>
+            <li><a href="#3" class="scroll-link" data-id="3"><i data-lucide="utensils"></i> <em>Menú</em></a></li>
+            <li><a href="#4" class="scroll-link" data-id="4"><i data-lucide="mail"></i> <em>Contacto</em></a></li>
+            
+            <li class="logout-li mt-auto pt-4 border-t border-gray-200 w-full">
+                <a href="#" id="logout-trigger" class="flex items-center p-4 text-[#F15A24] hover:bg-orange-50 transition duration-200" role="button">
+                    <i data-lucide="log-out"></i> <em class="ml-2 font-medium">Cerrar Sesión</em>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="slides">
+        
+        <section id="1" class="slide flex-col justify-center text-center opacity-0" aria-label="Sección de Inicio">
+            <div id="hero-content" class="content-wrapper w-full max-w-5xl rounded-lg bg-white p-10 md:p-16 border border-gray-200 shadow-2xl transform transition duration-500">
+                <div class="slide-caption">
+                    <h6 class="text-xl text-gray-500 font-light tracking-widest">BIENVENIDOS A</h6>
+                    <h2 class="text-7xl md:text-9xl font-black leading-none mt-4 mb-4" style="color: var(--color-accent); text-shadow: 2px 2px 0 rgba(0,0,0,0.05);">WUSHI</h2>
+                    <div class="h-1 w-20 bg-gray-300 mx-auto rounded-full my-6"></div> 
+                    <p class="text-2xl text-gray-600 font-medium italic">"La Chantin del Sushi y el Rámen"</p>
+                    <a href="#3" class="scroll-link mt-8 inline-flex items-center bg-[#F15A24] hover:bg-[#D44E1C] text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-xl shadow-[#F15A24]/30 uppercase tracking-wider">
+                        Ver Nuestro Menú <i data-lucide="arrow-right" class="w-5 h-5 ml-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div id="thumbnail" class="mt-8 flex space-x-4" role="tablist">
+                <div data-target="#1" class="page-dot w-12 h-2 bg-[#F15A24] rounded-full cursor-pointer hover:bg-[#D44E1C] transition shadow-sm" role="tab" aria-controls="1" aria-selected="true" tabindex="0"></div>
+                <div data-target="#2" class="page-dot w-12 h-2 bg-gray-300 rounded-full cursor-pointer hover:bg-gray-400 transition shadow-sm" role="tab" aria-controls="2" aria-selected="false" tabindex="0"></div>
+                <div data-target="#3" class="page-dot w-12 h-2 bg-gray-300 rounded-full cursor-pointer hover:bg-gray-400 transition shadow-sm" role="tab" aria-controls="3" aria-selected="false" tabindex="0"></div>
+                <div data-target="#4" class="page-dot w-12 h-2 bg-gray-300 rounded-full cursor-pointer hover:bg-gray-400 transition shadow-sm" role="tab" aria-controls="4" aria-selected="false" tabindex="0"></div>
+            </div>
+        </section>
+
+        <section id="2" class="slide flex-col opacity-0" aria-label="Sección Nosotros">
+            <div class="content-wrapper second-content max-w-5xl w-full">
+                <div id='tabs' class="bg-white rounded-lg shadow-2xl p-8 md:p-12 border border-gray-200">
+                    <ul class="flex border-b border-gray-200 mb-8 -mt-4" role="tablist">
+                        <li><a href='#tabs-1' class='tab-link border-b-2 p-3 font-extrabold flex items-center transition duration-300' role="tab" aria-controls="tabs-1" aria-selected="true"><i data-lucide="monitor"></i> <span>Ofrecemos</span></a></li>
+                        <li><a href='#tabs-2' class='tab-link p-3 font-semibold flex items-center hover:text-[#F15A24] transition duration-300' role="tab" aria-controls="tabs-2" aria-selected="false"><i data-lucide="users"></i> <span>Hacemos</span></a></li>
+                        <li><a href='#tabs-3' class='tab-link p-3 font-semibold flex items-center hover:text-[#F15A24] transition duration-300' role="tab" aria-controls="tabs-3" aria-selected="false"><i data-lucide="heart"></i> <span>Somos</span></a></li>
+                    </ul>
+                    <section class='tabs-content'>
+                        <article id='tabs-1' class='tab-pane' role="tabpanel" aria-labelledby="tabs-1" style="display: block;">
+                            <h2 class="text-3xl font-bold mb-4" style="color: var(--color-base-dark);">Experiencia Gastronómica Japonesa</h2>
+                            <p class="mb-4 text-gray-700 font-light leading-relaxed">En Wushi ofrecemos una experiencia completa de comida japonesa, donde la calidad, el sabor y la presentación se unen en cada plato. Nuestra carta incluye una amplia variedad de **sushi artesanal**, **rámenes tradicionales**, entradas calientes, bowls y bebidas asiáticas, preparadas con ingredientes frescos y seleccionados cuidadosamente. Cada visita es una oportunidad para descubrir nuevos sabores, disfrutar combinaciones únicas y vivir una experiencia gastronómica auténtica en un ambiente moderno y acogedor.</p>
+                        </article>
+                        <article id='tabs-2' class='tab-pane' role="tabpanel" aria-labelledby="tabs-2" style="display: none;">
+                            <h2 class="text-3xl font-bold mb-4" style="color: var(--color-base-dark);">Artesanía y Fusión</h2>
+                            <p class="mb-4 text-gray-700 font-light leading-relaxed">En Wushi creamos experiencias, no solo platos. Elaboramos cada preparación al momento, respetando técnicas tradicionales de la cocina japonesa y fusionándolas con un toque contemporáneo. Nos especializamos en la preparación artesanal de sushi y rámen, garantizando **frescura, sabor y presentación impecable**. Cuidamos cada detalle: desde el corte del pescado hasta el emplatado final, para que cada cliente disfrute de una experiencia única en cada visita.</p>
+                        </article>
+                        <article id='tabs-3' class='tab-pane' role="tabpanel" aria-labelledby="tabs-3" style="display: none;">
+                            <h2 class="text-3xl font-bold mb-4" style="color: var(--color-base-dark);">Pasión por la Cultura Japonesa</h2>
+                            <p class="mb-4 text-gray-700 font-light leading-relaxed">Somos Wushi: La chantin del sushi y el rámen, un restaurante nacido de la pasión por la gastronomía japonesa y el deseo de compartir su esencia con cada cliente. Nos caracteriza el compromiso con la **calidad, la innovación y el buen servicio**. Creemos que la comida es una forma de conectar culturas, por eso trabajamos cada día para ofrecer una experiencia que combine tradición, sabor y un ambiente agradable donde siempre quieras volver.</p>
+                        </article>
+                    </section>
+                </div>
+            </div>
+        </section>
+
+        <section id="3" class="slide flex-col opacity-0" aria-label="Sección de Menú y Productos">
+            <h2 class="text-4xl font-bold mb-4 text-center" style="color: var(--color-accent);">Nuestra Galería de Productos</h2>
+            <p class="text-xl font-light mb-12 text-gray-600">Una selección de lo mejor de nuestro menú artesanal.</p>
+
+            <div class="content-wrapper third-content max-w-6xl w-full">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div class="featured-item bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transform hover:scale-[1.05] transition duration-300 hover:shadow-2xl">
+                        <img src="https://cdn-icons-png.flaticon.com/256/7602/7602757.png" alt="Niguiri Especial de Salmón" class="w-full h-auto object-cover border-b border-gray-100">
+                        <div class="down-content p-5 text-center">
+                            <h4 class="text-xl font-bold text-gray-800">Niguiri Especial</h4>
+                            <p class="text-sm text-gray-500 mt-1 mb-3">Elaborado con cortes finos</p>
+                            <h6 class="text-2xl font-extrabold mt-2" style="color: var(--color-accent);">$3.50</h6>
+                            <a href="#" class="detail-link mt-4 inline-block text-xs uppercase font-bold tracking-wider text-[#F15A24] hover:text-[#D44E1C] transition duration-300" aria-label="Ver detalles del Niguiri Especial">
+                                Ver Detalles <i data-lucide="chevron-right" class="w-4 h-4 inline-block ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="featured-item bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transform hover:scale-[1.05] transition duration-300 hover:shadow-2xl">
+                        <img src="https://cdn-icons-png.flaticon.com/512/9438/9438891.png" alt="Rolls de Maki Variados" class="w-full h-auto object-cover border-b border-gray-100">
+                        <div class="down-content p-5 text-center">
+                            <h4 class="text-xl font-bold text-gray-800">Rolls de Maki</h4>
+                            <p class="text-sm text-gray-500 mt-1 mb-3">Sabores clásicos y fusión</p>
+                            <h6 class="text-2xl font-extrabold mt-2" style="color: var(--color-accent);">$5.00</h6>
+                            <a href="#" class="detail-link mt-4 inline-block text-xs uppercase font-bold tracking-wider text-[#F15A24] hover:text-[#D44E1C] transition duration-300" aria-label="Ver detalles de los Rolls de Maki">
+                                Ver Detalles <i data-lucide="chevron-right" class="w-4 h-4 inline-block ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="featured-item bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transform hover:scale-[1.05] transition duration-300 hover:shadow-2xl">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2821/2821803.png" alt="Tonkotsu Ramen" class="w-full h-auto object-cover border-b border-gray-100">
+                        <div class="down-content p-5 text-center">
+                            <h4 class="text-xl font-bold text-gray-800">Tonkotsu Rámen</h4>
+                            <p class="text-sm text-gray-500 mt-1 mb-3">Caldo de cerdo tradicional</p>
+                            <h6 class="text-2xl font-extrabold mt-2" style="color: var(--color-accent);">$10.90</h6>
+                            <a href="#" class="detail-link mt-4 inline-block text-xs uppercase font-bold tracking-wider text-[#F15A24] hover:text-[#D44E1C] transition duration-300" aria-label="Ver detalles del Tonkotsu Rámen">
+                                Ver Detalles <i data-lucide="chevron-right" class="w-4 h-4 inline-block ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="featured-item bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transform hover:scale-[1.05] transition duration-300 hover:shadow-2xl">
+                        <img src="https://cdn-icons-png.flaticon.com/512/10637/10637862.png" alt="Miso Ramen" class="w-full h-auto object-cover border-b border-gray-100">
+                        <div class="down-content p-5 text-center">
+                            <h4 class="text-xl font-bold text-gray-800">Miso Rámen</h4>
+                            <p class="text-sm text-gray-500 mt-1 mb-3">Caldo aromático de miso</p>
+                            <h6 class="text-2xl font-extrabold mt-2" style="color: var(--color-accent);">$10.90</h6>
+                            <a href="#" class="detail-link mt-4 inline-block text-xs uppercase font-bold tracking-wider text-[#F15A24] hover:text-[#D44E1C] transition duration-300" aria-label="Ver detalles del Miso Rámen">
+                                Ver Detalles <i data-lucide="chevron-right" class="w-4 h-4 inline-block ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="4" class="slide flex-col opacity-0" aria-label="Sección de Contacto">
+            <div class="content-wrapper fourth-content max-w-3xl w-full">
+                <div class="bg-white rounded-lg shadow-2xl p-8 md:p-12 border border-gray-200">
+                    <h2 class="text-4xl font-light mb-2 text-[#F15A24]">Contáctanos <span class="text-gray-500 text-xl font-light">(ご挨拶)</span></h2>
+                    <p class="text-gray-700 mb-8 font-light leading-relaxed">¡Gracias por tu interés en Wushi! Estamos listos para atenderte.</p>
+                    
+                    <form id="contact" action="#" method="post" class="space-y-6" role="form">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <input name="name" type="text" class="w-full bg-gray-50 text-gray-800 border-2 border-gray-200 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#F15A24] transition duration-200" id="name" placeholder="Tu nombre..." required="" aria-label="Tu nombre" aria-required="true">
+                            </div>
+                            <div>
+                                <input name="email" type="email" class="w-full bg-gray-50 text-gray-800 border-2 border-gray-200 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#F15A24] transition duration-200" id="email" placeholder="Tu correo..." required="" aria-label="Tu correo electrónico" aria-required="true">
+                            </div>
+                        </div>
+                        <div>
+                            <textarea name="message" rows="6" class="w-full bg-gray-50 text-gray-800 border-2 border-gray-200 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#F15A24] resize-none transition duration-200" id="message" placeholder="Tu mensaje..." required="" aria-label="Tu mensaje" aria-required="true"></textarea>
+                        </div>
+                        <div>
+                            <button type="submit" id="form-submit" class="button w-full bg-[#F15A24] hover:bg-[#D44E1C] text-white font-extrabold py-3 px-6 rounded-full transition duration-300 shadow-xl shadow-[#F15A24]/40 uppercase tracking-widest" aria-label="Enviar formulario de contacto">
+                                Enviar Mensaje <i data-lucide="send" class="w-4 h-4 inline-block ml-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <div id="logout-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-content text-center">
+            <i data-lucide="log-out" class="w-12 h-12 mx-auto mb-4 text-[#F15A24]"></i>
+            <h3 id="modal-title" class="text-2xl font-bold mb-3" style="color: var(--color-base-dark);">Confirmar Cierre de Sesión</h3>
+            <p class="mb-6 text-gray-700">¿Estás seguro que deseas cerrar la sesión en WUSHI? Tendrás que volver a iniciar sesión para continuar.</p>
+            
+            <div class="flex justify-center space-x-4">
+                <button id="cancel-logout" class="py-2 px-6 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition duration-200" aria-label="Cancelar cierre de sesión">
+                    Cancelar
+                </button>
+                <button id="confirm-logout" class="py-2 px-6 bg-[#F15A24] text-white font-semibold rounded-full hover:bg-[#D44E1C] transition duration-200" aria-label="Confirmar cierre de sesión">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        // Inicializar Lucide Icons
+        lucide.createIcons();
+        
+        // === FUNCIONES BÁSICAS ===
+        function scrollToID(id, speed) {
+            // CORRECCIÓN: Se añade el ajuste para el menú en móvil si es necesario
+            var menuHeight = (window.innerWidth <= 768) ? $('#main-nav').outerHeight() : 0;
+            var targetOffset = $(id).offset().top - menuHeight;
+            
+            $('html,body').animate({
+                scrollTop: targetOffset
+            }, speed);
+        }
+
+        // Función para mostrar el modal
+        function showLogoutModal() {
+            $('#logout-modal').addClass('show');
+            // CORRECCIÓN: Agregar la gestión del foco para la accesibilidad del modal
+            $('#cancel-logout').focus();
+        }
+        
+        // Función para ocultar el modal
+        function hideLogoutModal() {
+            $('#logout-modal').removeClass('show');
+            // CORRECCIÓN: Devolver el foco al elemento que activó el modal
+            $('#logout-trigger').focus();
+        }
+
+        // Función para manejar el estado activo de la navegación
+        function setActiveNavLink(id) {
+            $('nav ul li').removeClass('active-nav-link');
+            // CORRECCIÓN: Añadir aria-current al link activo y removerlo de los demás
+            $('nav ul li a').attr('aria-current', 'false');
+            $('nav ul li a.scroll-link[href="#' + id + '"]').closest('li').addClass('active-nav-link');
+            $('nav ul li a.scroll-link[href="#' + id + '"]').attr('aria-current', 'page');
+        }
+
+        // Función para manejar el estado activo de los dots (dots)
+        function setActivePageDot(id) {
+            $('.page-dot').removeClass('bg-[#F15A24]').addClass('bg-gray-300 hover:bg-gray-400').attr('aria-selected', 'false');
+            $('.page-dot[data-target="#' + id + '"]').removeClass('bg-gray-300 hover:bg-gray-400').addClass('bg-[#F15A24] hover:bg-[#D44E1C]').attr('aria-selected', 'true');
+        }
+
+        // Función para aplicar estilos a la pestaña activa (sección Nosotros)
+        function setActiveTab(targetId) {
+            // Quitar estilos activos de todos los links
+            $('.tab-link').removeClass('active-tab font-extrabold').addClass('font-semibold');
+            $('.tab-link').css({ 'color': '', 'border-color': '', 'border-bottom-width': '' }).find('[data-lucide]').css('color', 'var(--color-text-light)');
+            $('.tab-link').attr('aria-selected', 'false');
+
+            // Aplicar estilos activos al link clickeado
+            const $this = $(`.tab-link[href="${targetId}"]`);
+            $this.addClass('active-tab font-extrabold').removeClass('font-semibold');
+            $this.css({
+                'color': 'var(--color-accent)', 
+                'border-color': 'var(--color-accent)',
+                'border-bottom-width': '2px'
+            }).find('[data-lucide]').css('color', 'var(--color-accent)');
+            $this.attr('aria-selected', 'true');
+
+            // Ocultar todos los paneles de contenido y mostrar el objetivo
+            $('.tabs-content .tab-pane').hide().attr('aria-hidden', 'true');
+            $(targetId).fadeIn(400).attr('aria-hidden', 'false');
+        }
+        
+        $(document).ready(function() {
+            
+            // === INICIALIZACIÓN ===
+            $('#preloader').fadeOut(500, function() {
+                $(this).remove();
+                // Animación de aparición gradual de las secciones al cargar
+                $('.slide').each(function(index) {
+                    $(this).delay(index * 200).animate({ opacity: 1 }, 600);
+                });
+            });
+            
+            // Inicializar la primera sección como activa (nav link y dot)
+            setActiveNavLink('1');
+            setActivePageDot('1');
+            
+            // Inicializar la primera pestaña
+            setActiveTab('#tabs-1'); // CORRECCIÓN: Usar la función estandarizada
+
+            
+            // === EVENTOS DE SCROLL Y NAVEGACIÓN ===
+            // Manejar los clics de desplazamiento (Enlaces principales del menú y Dots)
+            $('.scroll-link, .page-dot').on('click', function(event) {
+                event.preventDefault();
+                
+                // Determinar el ID de la sección objetivo
+                var sectionID = $(this).attr("href") || $(this).data("target");
+                var id = sectionID.substring(1); // Obtener solo el número (e.g., "1")
+                
+                setActiveNavLink(id);
+                setActivePageDot(id);
+
+                scrollToID(sectionID, 750);
+            });
+
+            // Lógica para que el enlace activo cambie al hacer scroll (Optimizado)
+            $(window).on('scroll', function() {
+                let current = '1';
+                // Altura de la ventana / 3 para un cambio de sección más temprano
+                const scroll = $(window).scrollTop() + ($(window).height() / 3); 
+
+                $('.slide').each(function() {
+                    const sectionTop = $(this).offset().top;
+                    
+                    if (scroll >= sectionTop) {
+                        current = $(this).attr('id');
+                    }
+                });
+
+                setActiveNavLink(current);
+                setActivePageDot(current);
+            });
+
+            // === LÓGICA DE MODAL DE LOGOUT ===
+            // Asignar evento al enlace de Cerrar Sesión
+            $('#logout-trigger').on('click', function(event) {
+                event.preventDefault(); 
+                showLogoutModal();
+            });
+
+            // Asignar evento al botón de Cancelar
+            $('#cancel-logout').on('click', hideLogoutModal);
+            
+            // Asignar evento al botón de Cerrar Sesión (Confirmar)
+            $('#confirm-logout').on('click', function() {
+                window.location.href = "logout.php"; 
+            });
+            
+            // Ocultar el modal si se hace clic fuera del contenido
+            $('#logout-modal').on('click', function(e) {
+                if ($(e.target).is('#logout-modal')) {
+                    hideLogoutModal();
+                }
+            });
+            
+            // Ocultar modal al presionar ESC
+            $(document).on('keydown', function(e) {
+                if (e.key === "Escape" && $('#logout-modal').hasClass('show')) {
+                    hideLogoutModal();
+                }
+            });
+            
+            // 4. Manejar los clics en los botones "Ver Detalles" (Sección 3)
+            $('.detail-link').on('click', function(event) {
+                event.preventDefault(); 
+                alert("Funcionalidad de detalles en desarrollo para: " + $(this).closest('.down-content').find('h4').text());
+            });
+
+            // 3. Lógica de Pestañas (Tabs) para la sección #2 (Optimizado)
+            $('.tab-link').on('click', function(event) {
+                event.preventDefault();
+                const targetId = $(this).attr('href');
+                setActiveTab(targetId);
+            });
+            
+            // CORRECCIÓN: Manejar la navegación de pestañas con teclado (flechas)
+            $('.tab-link').on('keydown', function(e) {
+                let $currentTab = $(this).closest('li');
+                let $targetTab;
+                
+                // Flecha derecha o Flecha abajo
+                if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                    e.preventDefault();
+                    $targetTab = $currentTab.next('li').length ? $currentTab.next('li') : $currentTab.siblings('li').first();
+                }
+                // Flecha izquierda o Flecha arriba
+                else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                    e.preventDefault();
+                    $targetTab = $currentTab.prev('li').length ? $currentTab.prev('li') : $currentTab.siblings('li').last();
+                }
+                
+                if ($targetTab && $targetTab.length) {
+                    $targetTab.find('.tab-link').focus().click();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
