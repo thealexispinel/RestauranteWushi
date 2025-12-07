@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Formato de correo electrónico inválido.';
     } elseif ($password !== $confirm_password) {
         $error = 'Las contraseñas no coinciden.';
-    } elseif (strlen($password) < 8) {
+    } elseif (strlen($password) < 8 || strlen($password) > 20) {
         $error = 'La contraseña debe tener al menos 8 caracteres.';
     } else {
         try {
